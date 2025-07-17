@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Eğirdir Gölü Karşılaştırmalı Su Alanı</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    .sidebar { position: fixed; width: 300px; top: 0; bottom: 0; overflow-y: auto; padding: 20px; background: #f8f9fa; box-shadow: 2px 0 5px rgba(0,0,0,0.1); }
+    .form-group { margin-bottom: 20px; }  /* Daha fazla mesafe */
+    button { width: 100%; padding: 10px; font-size: 16px; background: #0d6efd; color: white; border: none; border-radius: 4px; }  /* Mavi buton */
+    .map-container { margin-left: 300px; position: relative; height: 100vh; }
+    .area-overlay { position: absolute; top: 10px; left: 60px; background: rgba(255,255,255,0.9); padding: 15px; border-radius: 6px; z-index: 1000; font-size: 2rem; }  /* Daha büyük kutucuk ve sağda */
+    .area-overlay p { margin: 10px 0; }
+  </style>
+  <script>
+    function updateMethods(i) {
+      const sat = document.getElementById('satellite'+i).value;
+      const sel = document.getElementById('method'+i);
+      sel.innerHTML = '';
+      const opts = sat === 'Sentinel-1' ? ['VV','VH'] : ['NDWI','MNDWI'];
+      opts.forEach(o => { sel.innerHTML += `<option>${o}</option>`; });
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      [1,2].forEach(i => {
+        document.getElementById('satellite'+i).addEventListener('change', () => updateMethods(i));
+        updateMethods(i);
+      });
+    });
+  </script>
+</head>
+<body>
+  <div class="sidebar">
+    <h2 style="margin-bottom: 20px; left:20px">Parametre Seçimi</h2>
+    <form method="post">
+      {% for i in [1,2] %}
+      <div class="form-group">
+        <h4 style="margin-bottom: 20px; left:1opx">Görüntü {{i}}</h4>
+        <label for="satellite{{i}}">Uydu: </label>
+        <select id="satellite{{i}}" name="satellite{{i}}">
+          <option>Sentinel-1</option>
+          <option>Sentinel-2</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="method{{i}}">Yöntem: </label>
+        <select id="method{{i}}" name="method{{i}}"></select>
+      </div>
+      <div class="form-group">
+        <label for="year{{i}}">Yıl: </label>
+        <select id="year{{i}}" name="year{{i}}">
+          {% for y in range(2018,2025) %}<option>{{y}}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="month{{i}}">Ay: </label>
+        <select id="month{{i}}" name="month{{i}}">
+          {% for m in range(1,13) %}<option>{{m}}</option>{% endfor %}
+        </select>
+      </div>
+      {% endfor %}
+      <button type="submit">Karşılaştır</button>
+    </form>
+  </div>
+<div class="map-container">
+    <div class="area-overlay">
+      <p>{{label_texts[0] or '–'}}: {{area_vals[0] or '–'}} km²</p>
+      <p>{{label_texts[1] or '–'}}: {{area_vals[1] or '–'}} km²</p>
+    </div>
+    {{ map_html | safe }}
+  </div>
+</body>
+</html>
