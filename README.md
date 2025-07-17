@@ -32,7 +32,7 @@ This project is a web application built using Google Earth Engine and Flask. Use
 - Python (Flask)
 - Google Earth Engine Python API
 - Geopandas & Geemap
-- HTML / JavaScript (Jinja2 templating)
+- HTML / JavaScript
 
 ---
 
